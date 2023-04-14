@@ -1,0 +1,120 @@
+<!doctype html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+	<style type="text/css">
+		body,
+		div,
+		canvas {
+			image-rendering: optimizeSpeed;
+			-webkit-image-rendering: optimizeSpeed;
+			-webkit-interpolation-mode: nearest-neighbor;
+		}
+
+		body {
+			padding: 0;
+			margin: 0;
+			font-size: 12px;
+			background: linear-gradient(to right, #fac1ea, #a9c1ef);
+		}
+
+		body,
+		html {
+			height: 100%;
+		}
+
+		#outer {
+			height: 80%;
+			overflow: hidden;
+			position: relative;
+			width: 100%;
+		}
+
+		#outer[id] {
+			display: table;
+			position: static;
+		}
+
+		#middle {
+			position: absolute;
+			top: 50%;
+		}
+
+		/* for ie only*/
+		#middle[id] {
+			display: table-cell;
+			vertical-align: middle;
+			position: static;
+		}
+
+		.box {
+			position: absolute;
+			margin-top: 300px;
+			margin-left: 10px;
+			width: 200px;
+			height: 200px;
+		}
+
+		.box img {
+			width: 100px;
+			height: 100px;
+			border-radius: 50px;
+			margin-left: 45px;
+			margin-top: 20px;
+		}
+
+		.box span {
+			display: inline-block;
+			width: 150px;
+			height: 30px;
+			margin: 20px 0 0 20px;
+			text-align: center;
+			font-size: 18px;
+			line-height: 30px;
+		}
+	</style>
+
+	<title>Fish</title>
+
+	<script type="text/javascript" src="js/quark.base-1.0.0.alpha.min.js"></script>
+	<script src="../jquery.min.js"></script>
+	<!--<script type="text/javascript" src="fishjoy.game.js"></script>-->
+	<script type="text/javascript" src="src/R.js"></script>
+	<script type="text/javascript" src="src/Utils.js"></script>
+	<script type="text/javascript" src="src/fishjoy.js"></script>
+	<script type="text/javascript" src="src/FishManager.js"></script>
+	<script type="text/javascript" src="src/FishGroup.js"></script>
+	<script type="text/javascript" src="src/views/Fish.js"></script>
+	<script type="text/javascript" src="src/views/Cannon.js"></script>
+	<script type="text/javascript" src="src/views/Bullet.js"></script>
+	<script type="text/javascript" src="src/views/Num.js"></script>
+	<script type="text/javascript" src="src/views/Player.js"></script>
+
+</head>
+
+<body>
+	<div class="box"><img src="../user.jpg" alt="">
+	</div>
+	<div id="outer">
+		<div id="middle">
+			<div id="container" style="position:relative;width:980px;height:300px;top:-50%;margin:0 auto;"></div>
+			<div id="msg"></div>
+		</div>
+	</div>
+	<div id="fps" style="position:absolute;top:0;left:0;color:#fff;"></div>
+
+	<script>
+		(function () {
+			document.addEventListener('DOMContentLoaded', function () {
+				// 过1秒发起一个ajax请求
+				$(".box img").attr('src', `../user.jpg`)
+				$("html").fadeIn(800)
+			});
+		})()
+	</script>
+</body>
+
+</html>

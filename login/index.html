@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Login</title>
+   <script src="./jquery.min.js"></script>
+   <link rel="shortcut icon" href="./favicon.ico">
+   <link rel="stylesheet" href="./login.css">
+
+   <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+
+</head>
+
+<body>
+
+   <div class="box">
+      <div class="point"></div>
+      <!-- 标题 -->
+      <h1 class="login">Login</h1>
+      <!-- 三个input框 -->
+      <ul>
+         <li><input type="username" placeholder="QQemail" class="email"> </li>
+         <li><input type="password" placeholder="password" class="psd"></li>
+         <li><input type="username" placeholder="verification" class="veri"><button class="getveri">获取邮箱验证码</button>
+         </li>
+      </ul>
+      <button class="signin">Login</button>
+      <div class="signup">Don't have account? <a href="javascript:;" class="jump">Sign up</a></div>
+   </div>
+   <script>
+      //抖动函数
+      function dou (n) {
+         $("ul li:eq(" + n + ")").addClass('shake')
+         setTimeout(() => {
+            $("ul li:eq(" + n + ")").removeClass('shake')
+         }, 500)
+      }
+      // 文本聚焦那个小豆豆移动
+      $(".email").focus(function () {
+         $(".point").stop().animate({
+            top: 156 + 'px'
+         }, 500)
+      })
+      $(".psd").focus(function () {
+         $(".point").stop().animate({
+            top: 240 + 'px'
+         }, 500)
+      })
+      $(".veri").focus(function () {
+         $(".point").stop().animate({
+            top: 320 + 'px'
+         }, 500)
+      })
+      //点击发送验证码
+      let email = null
+      let time = 60
+      let timer = null
+      let code = null
+      $(".getveri").on("click", function () {
+         function isValidEmail (email) {
+            return isEmail = /\S+@\S+\.\S+/.test(email);
+         }
+         //用户email
+         email = $.trim($(".email").val())
+         console.log(email);
+         //用户passwordw
+         psd = $.trim($(".psd").val())
+         if (isValidEmail(email)) {
+
+            timer = setInterval(Times, 1000)
+            // 禁用按钮
+            $(".getveri").prop("disabled", true);
+            function Times () {
+               if (time == 0) {
+                  clearInterval(timer)
+                  // 禁用按钮
+                  $(".getveri").prop("disabled", false);
+
+                  $(".getveri").text("获取邮箱验证码")
+                  time = 60
+               } else {
+                  $(".getveri").text(`${time}秒后再次发送`)
+                  time--
+               }
+            }
+
+            const p = new Promise((res, rej) => {
+               let url = "http://localhost:1010/veri"
+               $.ajax({
+                  type: 'POST',
+                  url: url,
+                  data: {
+                     e: email,
+                     p: psd
+                  },
+                  success: function (respons) {
+                     res(respons)
+                     rej("失败")
+                  }
+               })
+
+            })
+
+            p.then(function (value) {
+               //拿到后端传来的验证码
+               code = value.data
+               console.log(code);
+            }, function (reason) {
+               // 失败后的输出
+               console.log(reason);
+            })
+         } else {
+            dou(0)
+         }
+
+
+      })
+
+
+      $(".signin").on("click", function () {
+
+         //用户email
+         let email = $.trim($(".email").val())
+         //用户password
+         let psd = $.trim($(".psd").val())
+
+         let veri = $.trim($(".veri").val())
+         function isValidEmail (email) {
+            return isEmail = /\S+@\S+\.\S+/.test(email);
+         }
+         // 如果点击按钮不是email的格式则提醒一下
+         // password也提醒
+         if (!isValidEmail(email) || email.length == 0 || psd.length == 0 || veri.length == 0) {
+            dou(0)
+            dou(1)
+            dou(2)
+
+         } else if (veri != code) {
+            dou(2)
+         } else {
+            let url = "http://localhost:1010/login"
+            // 发起一个ajax像后端拿到账号密码的数据 如果错误就抖一抖
+            $.ajax({
+               type: 'GET',
+               url: url,
+               data: {
+                  e: email,
+                  p: psd
+               },
+               success: function (res) {
+                  console.log(res);
+                  if (res.statusbar == 200) {
+                     console.log(email);
+                     let url = 'http://localhost:1010/login/jump'
+                     sessionStorage.setItem('email', email.slice(0, 10)); // 设置 sessionStorage 值
+                     window.location.href = url
+                     
+                     // 账号密码对的时候
+
+                  } else if (res.statusbar == 400) {
+                     // 账号密码输入错误的时候
+                     alert('失败')
+                     dou(0)
+                     dou(1)
+                  }
+               }
+            })
+            // let url = "http://localhost:1010/login"
+            // // 发起一个ajax像后端拿到账号密码的数据 如果错误就抖一抖
+            // $.ajax({
+            //    type: 'GET',
+            //    url: url,
+            //    data: {
+            //       e: email,
+            //       p: psd
+            //    }
+            // })
+            // 如果正确就提示登录成功跳转到另一个页面
+         }
+      })
+      $(".jump").on('click', function () {
+         let url = "http://localhost:1010/jump"
+         $.ajax({
+            type: 'GET',
+            url: url,
+            success: function (res) {
+               window.location.href = url
+            }
+         })
+      })
+
+
+   </script>
+</body>
+
+</html>

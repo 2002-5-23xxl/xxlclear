@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>regist</title>
+   <script src="./jquery.min.js"></script>
+   <link rel="stylesheet" href="./regist.css">
+   <link rel="shortcut icon" href="./favicon.ico">
+   <style>
+
+   </style>
+</head>
+
+<body>
+   <div class="box">
+      <div class="point"></div>
+      <!-- 标题 -->
+      <h1 class="regist">Regist</h1>
+      <!-- 三个input框 -->
+      <ul>
+         <li><input type="username" placeholder="QQemail" class="email"> <img src="../image/yes.png" alt="" class="yes">
+         </li>
+         <li><input type="password" placeholder="password" class="psd"><img src="./eye-close.png" alt="" class="eye1">
+         </li>
+         <span class="err">请输入6-10个任意字符</span>
+         <li><input type="password" placeholder="verification" class="psd1"><img src="./eye-close.png" alt=""
+               class="eye2"></li>
+         <span class="err1">两次密码不一样</span>
+      </ul>
+      <a class="signup">regist</a>
+   </div>
+   <div class="popover">
+      <h3>注册成功！</h3>
+      <i class="cross"><img src="./corss.png" alt=""></i>
+   </div>
+   <div class="popover1">
+      <h3>Email注册过了</h3>
+      <i class="cross1"><img src="./corss.png" alt=""></i>
+   </div>
+   <script>
+      let email = null
+      let psd = null
+      let psd1 = null
+      //抖动函数
+      function dou (n) {
+         $("ul li:eq(" + n + ")").addClass('shake')
+         setTimeout(() => {
+            $("ul li:eq(" + n + ")").removeClass('shake')
+         }, 500)
+      }
+      // 跳转页面的时候慢慢显示出来
+      $('html').stop().fadeIn(800)
+      // 谁聚焦小点点就到谁旁边
+      $(".email").focus(function () {
+         $(".point").stop().animate({
+            top: 156 + 'px'
+         }, 500)
+      })
+      $(".psd").focus(function () {
+         $(".point").stop().animate({
+            top: 240 + 'px'
+         }, 500)
+      })
+      $(".psd1").focus(function () {
+         $(".point").stop().animate({
+            top: 320 + 'px'
+         }, 500)
+      })
+      //判断是否输入正确邮箱格式
+      function isValidEmail (email) {
+         return isEmail = /\S+@\S+\.\S+/.test(email);
+      }
+      //点击注册按钮
+      $(".signup").on('click', function () {
+         //获取三个输入框的内容
+         email = $(".email").val().trim()
+         psd = $(".psd").val().trim()
+         psd1 = $(".psd1").val().trim()
+         // 如果第一个没输入或者输入的不是email抖动一下
+
+         if (email.length == 0 || !isValidEmail(email)) {
+            dou(0)
+         }
+         //如果密码没输入 或者密码大于15 或者密码小于6都会抖动一下
+         if (psd.length == 0 || psd.length > 11 || psd.length < 6) {
+            dou(1)
+         }
+         // 如果确认密码与上面密码不一样也会抖动
+         if (psd != psd1) {
+            dou(2)
+            $(".err1").stop().fadeIn(800)
+         }
+         // 如果格式全都正确那么就发送一个post
+         console.log(email, psd);
+         const p = new Promise((resolve, reject) => {
+            if (psd1 == psd && psd1.length < 11 && psd1.length > 5) {
+               $.ajax({
+                  type: 'POST',
+                  url: 'http://localhost:1010/regist',
+                  data: {
+                     e: email,
+                     p: psd1
+                  },
+                  success: function (response) {
+                     resolve(response)
+                     reject(response)
+                  }
+               })
+            }
+         })
+         p.then(function (value) {
+
+            console.log(value.statusbar);
+            // 如果注册成功
+            if (value.statusbar == 200) {
+               $(".popover").fadeIn(800, function () {
+                  $(".cross").on('click', function () {
+                     $(".popover").fadeOut(800)
+                  })
+               })
+            }
+            if (value.statusbar == 400) {
+               console.log(value.statusbar);
+               // 如果失败
+               $(".popover1").fadeIn(800, function () {
+                  $(".cross1").on('click', function () {
+                     $(".popover1").fadeOut(800)
+                  })
+               })
+            }
+         })
+      })
+      //当账户失去焦点的时候判断是不是输入的正确格式
+      $(".email").blur(function () {
+         let email = $(".email").val().trim()
+         if (isValidEmail(email)) {
+            $(".yes").attr('src', './yes.png')
+            $(".yes").stop().fadeIn(800)
+         } else {
+            dou(0)
+            $(".yes").attr('src', './no.png')
+            $(".yes").stop().fadeIn(800)
+         }
+      })
+      // 当密码获得失去焦点的时候
+      $(".psd").focus(function () {
+         $(".err").stop().fadeIn(800)
+      })
+      $(".psd").blur(function () {
+         let psd = $(".psd").val().trim()
+         if (psd.length == 0 || psd.length > 11 || psd.length < 6) {
+            dou(1)
+         } else {
+            $(".err").stop().fadeOut(800)
+         }
+      })
+      $(".psd1").blur(function () {
+         let psd = $(".psd").val().trim()
+         let psd1 = $(".psd1").val().trim()
+         if (psd !== psd1) {
+            dou(2)
+            $(".err1").stop().fadeIn(800)
+         } else {
+            $(".err1").stop().fadeOut(800)
+         }
+      })
+      // 点击小眼睛会看到密码
+      $(".eye1 ,.eye2").on('click', function (e) {
+         if ($(".psd ,.psd1").attr('type') == 'password') {
+            $(".psd ,.psd1").attr('type', 'text')
+            $(".eye1,.eye2").attr('src', './eye.png')
+         } else if ($(".psd ,.psd1").attr('type') == 'text') {
+            $(".psd ,.psd1").attr('type', 'password')
+            $(".eye1,.eye2").attr('src', './eye-close.png')
+         }
+      })
+
+
+   </script>
+</body>
+
+</html>
