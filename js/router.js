@@ -1,8 +1,8 @@
 const mysql = require("mysql");
 const db = mysql.createConnection({
-   host: "127.0.0.1",
+   host: "192.168.0.103",
    user: "root",
-   password: '123456',
+   password: '020523',
    database: "users",
 })
 const https = require('https');
@@ -35,8 +35,8 @@ router.get('/login/jump', (req, res) => {
    res.redirect('/201410051726/index.html')
 })
 
-router.get('/getqq',function(){
-   
+router.get('/getqq', function () {
+
 })
 //点击登录 
 router.get('/login', function (require, response) {
@@ -44,7 +44,7 @@ router.get('/login', function (require, response) {
    let psd = require.query.p
    console.log(email);
    // 先判断数据库这个账号密码是否正确
-   let MysqlStr = `select * from users.new_email where email= '${email}'  and password='${psd}'`
+   let MysqlStr = `select * from users.email where emails= '${email}'  and password='${psd}'`
    db.query(MysqlStr, function (err, results) {
       //如果查询成功
       if (results.length > 0) {
@@ -101,7 +101,7 @@ router.post('/regist', function (req, res) {
    let email = req.body.e
    let psd = req.body.p
    console.log(email);
-   let MySelectSqlstr = 'select * from users.new_email where email=?'
+   let MySelectSqlstr = 'select * from users.email where emails=?'
    // 先判断数据库里面有没有这个用户
    db.query(MySelectSqlstr, [email], function (err, results) {
       if (results.length > 0) {
@@ -113,7 +113,7 @@ router.post('/regist', function (req, res) {
          })
       } else {
          // 用户不存在 用户不存在就添加这个用户
-         let MyInsertSqlstr = 'insert into new_email(email,password) value(?,?)'
+         let MyInsertSqlstr = 'insert into email(emails,password) value(?,?)'
          db.query(MyInsertSqlstr, [email, psd], function (err, results) {
             console.log(`${GetTime()}用户数据添加完成 email是${email}密码是${psd}`);
             res.send({
