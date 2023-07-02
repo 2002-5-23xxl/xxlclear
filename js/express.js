@@ -8,7 +8,7 @@ app.use(cors())
 app.use('/', router)
 // 需要先告诉他文件夹
 app.use(express.static('../login'))
-app.listen(1010, () => {
+app.listen(1010, '0.0.0.0', () => {
    console.log("run at http://localhost:1010");
 })
 
